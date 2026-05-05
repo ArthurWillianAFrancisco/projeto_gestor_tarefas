@@ -19,6 +19,44 @@
             <p class="mt-4 text-center text-sm">Não tem conta? <a href="#" onclick="switchScreen('register-screen')" class="text-blue-400">Cadastre-se</a></p>
         </div>
     </div>
+    
+    <!-- DASHBOARD (Aparece após o Login) -->
+<div id="dashboard" class="hidden p-6">
+    <header class="flex justify-between items-center mb-10 border-b border-slate-700 pb-5">
+        <h1 class="text-2xl font-bold">Monitor de Segurança IoT</h1>
+        <span id="user-display" class="text-slate-400 italic">Operador: Carregando...</span>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Coluna de Alertas Críticos (Bots/Sensores) -->
+        <div class="bg-slate-800/50 p-4 rounded-xl border-t-4 border-red-500">
+            <h3 class="font-bold text-red-500 mb-4 flex items-center">
+                <span class="mr-2">🚨</span> Alertas do Sistema
+            </h3>
+            <div id="bot-tasks" class="space-y-4">
+                <!-- Exemplo de Card de Bot -->
+                <div class="bg-slate-700 p-3 rounded shadow border-l-2 border-red-500">
+                    <p class="text-xs text-slate-400 font-mono">[BOT-01] IP SUSPEITO</p>
+                    <h4 class="font-bold">Tentativas excessivas: 192.168.1.50</h4>
+                    <span class="text-[10px] bg-red-900 text-red-200 px-2 py-0.5 rounded uppercase mt-2 inline-block">Crítico</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna de Tarefas Manuais -->
+        <div class="bg-slate-800/50 p-4 rounded-xl border-t-4 border-blue-500">
+            <h3 class="font-bold text-blue-500 mb-4 flex items-center">
+                <span class="mr-2">👤</span> Operação Humana
+            </h3>
+            <div id="user-tasks" class="space-y-4">
+                <!-- Exemplo de Card Humano -->
+                <div class="bg-slate-700 p-3 rounded shadow border-l-2 border-blue-500">
+                    <p class="text-xs text-slate-400 italic">Criado por: Arthur</p>
+                    <h4 class="font-bold">Verificar logs de acesso às 18h</h4>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- TELA DE CADASTRO -->
     <div id="register-screen" class="hidden min-h-screen flex items-center justify-center">
