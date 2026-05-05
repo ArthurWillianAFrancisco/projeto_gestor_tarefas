@@ -5,7 +5,7 @@ from controllers.task_controller import task_bp
 from controllers.auth_controller import auth_bp
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # --- Configurações de Banco de Dados (Ordem Crítica) ---
 database_url = os.getenv("DATABASE_URL", "sqlite:///gestor.db")
