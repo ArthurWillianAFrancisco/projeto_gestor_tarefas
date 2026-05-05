@@ -34,5 +34,9 @@ with app.app_context():
 def index():
     return {"message": "API de Gestão de Tarefas Ativa!"}, 200
 
+@app.route('/login-page')
+def serve_front():
+    return app.send_static_file('index.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

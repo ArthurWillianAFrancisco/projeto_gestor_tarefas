@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Tarefas IoT - Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-slate-900 text-white font-sans">
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center">
+        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700">
+            <h2 class="text-3xl font-bold mb-6 text-center text-blue-400">LockDown API</h2>
+            <input id="login-user" type="text" placeholder="Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600 focus:outline-none focus:border-blue-500">
+            <input id="login-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600 focus:outline-none focus:border-blue-500">
+            <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition">Entrar</button>
+            <p class="mt-4 text-center text-sm">Não tem conta? <a href="#" onclick="switchScreen('register-screen')" class="text-blue-400">Cadastre-se</a></p>
+        </div>
+    </div>
+
+    <!-- TELA DE CADASTRO -->
+    <div id="register-screen" class="hidden min-h-screen flex items-center justify-center">
+        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700">
+            <h2 class="text-2xl font-bold mb-6 text-center">Novo Operador</h2>
+            <input id="reg-user" type="text" placeholder="Nome de Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600">
+            <input id="reg-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600">
+            <button onclick="fazerCadastro()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-bold transition">Criar Conta</button>
+            <button onclick="switchScreen('login-screen')" class="w-full mt-2 text-slate-400 text-sm">Voltar ao Login</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://projeto-gestor-tarefas.onrender.com"; // O SEU LINK DO RENDER
+
+        function switchScreen(screenId) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('register-screen').classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        async function fazerCadastro() {
+            const user = document.getElementById('reg-user').value;
+            const pass = document.getElementById('reg-pass').value;
+            try {
+                await axios.post(`${API_URL}/auth/register`, { username: user, password: pass, role: 'admin' });
+                alert("Cadastro realizado! Faça login.");
+                switchScreen('login-screen');
+            } catch (err) { alert("Erro no cadastro: " + err.response.data.message); }
+        }
+
+        async function fazerLogin() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            try {
+                const res = await axios.post(`${API_URL}/auth/login`, { username: user, password: pass });
+                localStorage.setItem('token', res.data.access_token);
+                alert("Logado com sucesso!");
+                // Aqui depois vamos chamar a função de carregar o Dashboard
+            } catch (err) { alert("Login inválido!"); }
+        }
+    </script>
+</body>
+</html>
