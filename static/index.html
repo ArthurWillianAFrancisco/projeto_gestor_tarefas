@@ -3,68 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LockDown API - Dashboard</title>
+    <title>LockDown API - Security Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Adicionando ícones para ficar mais profissional -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="bg-slate-900 text-white font-sans">
 
-    <!-- TELA DE LOGIN (Simplificada para o exemplo) -->
+    <!-- SEÇÃO: AUTENTICAÇÃO (LOGIN) -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center">
-        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700">
-            <h2 class="text-3xl font-bold mb-6 text-center text-blue-400">LockDown API</h2>
-            <input id="login-user" type="text" placeholder="Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600 focus:outline-none">
-            <input id="login-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600 focus:outline-none">
-            <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition">Entrar</button>
-            <p class="mt-4 text-center text-sm">Não tem conta? <a href="#" onclick="switchScreen('register-screen')" class="text-blue-400">Cadastre-se</a></p>
+        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700 text-center">
+            <h2 class="text-3xl font-bold mb-6 text-blue-400">LockDown API</h2>
+            <input id="login-user" type="text" placeholder="Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600 focus:outline-none focus:border-blue-500">
+            <input id="login-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600 focus:outline-none focus:border-blue-500">
+            <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition mb-4">Entrar</button>
+            <p class="text-sm">Monitoramento de Segurança Digital</p>
+            <button onclick="switchScreen('register-screen')" class="mt-4 text-blue-400 hover:underline text-sm">Criar novo operador</button>
         </div>
     </div>
 
-    <!-- TELA DE CADASTRO (Omitida aqui por brevidade, mantenha a sua anterior) -->
+    <!-- SEÇÃO: CADASTRO -->
     <div id="register-screen" class="hidden min-h-screen flex items-center justify-center">
-        <!-- ... seu código de registro ... -->
+        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700 text-center">
+            <h2 class="text-2xl font-bold mb-6">Novo Operador</h2>
+            <input id="reg-user" type="text" placeholder="Nome de Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600">
+            <input id="reg-pass" type="password" placeholder="Senha" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600">
+            <select id="reg-role" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600 text-slate-300">
+                <option value="user">Usuário (Leitura)</option>
+                <option value="admin">Administrador (Escrita/Delete)</option>
+            </select>
+            <button onclick="fazerCadastro()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-bold transition mb-4">Cadastrar</button>
+            <button onclick="switchScreen('login-screen')" class="text-slate-400 text-sm hover:underline">Voltar ao Login</button>
+        </div>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- SEÇÃO: DASHBOARD -->
     <div id="dashboard-screen" class="hidden min-h-screen p-6">
         <header class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
             <div>
-                <h1 class="text-3xl font-bold text-blue-400">Security Dashboard</h1>
-                <p id="user-info" class="text-slate-400">Operador: <span id="current-user" class="font-bold text-white">---</span></p>
+                <h1 class="text-3xl font-bold text-blue-400 tracking-tight">Security Dashboard</h1>
+                <p class="text-slate-400">Operador ativo: <span id="current-user" class="text-white font-mono">---</span></p>
             </div>
-            <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded transition border border-red-600/50">Sair</button>
+            <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-6 py-2 rounded-lg font-bold border border-red-600/50 transition">Sair</button>
         </header>
 
-        <!-- Grade Kanban -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Coluna: Alertas de Bot (MQTT) -->
-            <div class="bg-slate-800/40 p-4 rounded-xl border border-red-500/30">
-                <h3 class="font-bold text-red-500 mb-4 flex items-center uppercase tracking-wider text-sm">
-                    <span class="mr-2">🤖</span> Alertas de Bot (Invasão/IoT)
+            <!-- COLUNA: BOTS/MQTT -->
+            <div class="bg-slate-800/40 p-5 rounded-2xl border border-red-500/20">
+                <h3 class="text-red-500 font-black mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
+                    <span class="material-symbols-outlined">smart_toy</span> Alertas de Bot (Invasão/IoT)
                 </h3>
-                <div id="bot-tasks" class="space-y-4">
-                    <!-- Cards de Bot aparecerão aqui -->
-                </div>
+                <div id="bot-tasks" class="space-y-4"></div>
             </div>
 
-            <!-- Coluna: Tarefas Manuais (Admin/User) -->
-            <div class="bg-slate-800/40 p-4 rounded-xl border border-blue-500/30">
-                <h3 class="font-bold text-blue-500 mb-4 flex items-center uppercase tracking-wider text-sm">
-                    <span class="mr-2">👤</span> Tarefas de Operadores
+            <!-- COLUNA: OPERADORES -->
+            <div class="bg-slate-800/40 p-5 rounded-2xl border border-blue-500/20">
+                <h3 class="text-blue-500 font-black mb-6 flex items-center gap-2 uppercase text-xs tracking-widest">
+                    <span class="material-symbols-outlined">person</span> Tarefas de Operadores
                 </h3>
-                <div id="user-tasks" class="space-y-4">
-                    <!-- Cards Manuais aparecerão aqui -->
-                </div>
+                <div id="user-tasks" class="space-y-4"></div>
             </div>
 
-            <!-- Coluna: Adicionar Nova -->
-            <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700 border-dashed">
-                <h3 class="font-bold text-slate-400 mb-4 uppercase tracking-wider text-sm">Criar Chamado</h3>
-                <div class="space-y-3">
-                    <input id="task-title" type="text" placeholder="Título" class="w-full p-2 bg-slate-700 rounded border border-slate-600 outline-none focus:border-blue-500">
-                    <textarea id="task-desc" placeholder="Descrição" class="w-full p-2 bg-slate-700 rounded border border-slate-600 outline-none h-20 focus:border-blue-500"></textarea>
-                    <button onclick="criarTarefa()" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded font-bold transition">+ Adicionar</button>
+            <!-- COLUNA: CRIAÇÃO -->
+            <div class="bg-slate-800/60 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-slate-200 font-bold mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_task</span> Novo Chamado
+                </h3>
+                <div class="space-y-4">
+                    <input id="task-title" type="text" placeholder="Título do Alerta" class="w-full p-3 bg-slate-900 rounded-lg border border-slate-700 outline-none focus:border-blue-500">
+                    <textarea id="task-desc" placeholder="Descrição técnica ou IP suspeito..." class="w-full p-3 bg-slate-900 rounded-lg border border-slate-700 outline-none h-32 focus:border-blue-500"></textarea>
+                    <button onclick="criarTarefa()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-bold shadow-lg shadow-blue-900/20 transition">+ Abrir Chamado</button>
                 </div>
             </div>
         </div>
@@ -73,9 +83,9 @@
     <script>
         const API_URL = window.location.origin;
 
-        function switchScreen(screenId) {
+        function switchScreen(id) {
             ['login-screen', 'register-screen', 'dashboard-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById(screenId).classList.remove('hidden');
+            document.getElementById(id).classList.remove('hidden');
         }
 
         async function fazerLogin() {
@@ -87,7 +97,18 @@
                 document.getElementById('current-user').innerText = user;
                 switchScreen('dashboard-screen');
                 carregarTarefas();
-            } catch (err) { alert("Login falhou!"); }
+            } catch (err) { alert("Credenciais Inválidas!"); }
+        }
+
+        async function fazerCadastro() {
+            const user = document.getElementById('reg-user').value;
+            const pass = document.getElementById('reg-pass').value;
+            const role = document.getElementById('reg-role').value;
+            try {
+                await axios.post(`${API_URL}/auth/register`, { username: user, password: pass, role: role });
+                alert("Cadastro realizado!");
+                switchScreen('login-screen');
+            } catch (err) { alert("Erro ao cadastrar."); }
         }
 
         async function carregarTarefas() {
@@ -99,41 +120,68 @@
                 botDiv.innerHTML = ''; userDiv.innerHTML = '';
 
                 res.data.forEach(task => {
-                    const card = `
-                        <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 ${task.description.includes('MQTT') ? 'border-red-500' : 'border-blue-500'} shadow-lg hover:translate-x-1 transition-transform">
-                            <h4 class="font-bold text-lg">${task.title}</h4>
-                            <p class="text-sm text-slate-400 mt-1">${task.description}</p>
-                            <div class="mt-3 flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-slate-500">
-                                <span>Status: ${task.status}</span>
-                                <button onclick="deletarTarefa(${task.id})" class="text-red-400 hover:text-red-600 transition">Excluir</button>
+                    const concluido = task.status === 'concluido';
+                    const isBot = task.description.toLowerCase().includes('mqtt') || task.title.toLowerCase().includes('ip');
+                    
+                    const cardHtml = `
+                        <div class="bg-slate-700/40 p-4 rounded-xl border-l-4 ${concluido ? 'border-green-500 opacity-50' : (isBot ? 'border-red-500 shadow-red-900/10' : 'border-blue-500')} shadow-xl">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 id="t-${task.id}" contenteditable="${!concluido}" class="font-bold text-lg outline-none focus:bg-slate-600 rounded px-1 ${concluido ? 'line-through text-slate-500' : ''}">${task.title}</h4>
+                                <div class="flex gap-2">
+                                    ${!concluido ? `<button onclick="salvarEdicao(${task.id})" class="text-blue-400 text-sm" title="Salvar">💾</button>` : ''}
+                                    ${!concluido ? `<button onclick="concluir(${task.id})" class="text-green-500 text-sm">✅</button>` : '<span>✔️</span>'}
+                                </div>
+                            </div>
+                            <p id="d-${task.id}" contenteditable="${!concluido}" class="text-sm text-slate-400 outline-none focus:bg-slate-600 rounded px-1">${task.description}</p>
+                            <div class="mt-4 flex justify-between items-center">
+                                <span class="text-[9px] font-black uppercase px-2 py-1 bg-slate-900 rounded ${concluido ? 'text-green-500' : 'text-slate-500'}">${task.status}</span>
+                                <button onclick="deletar(${task.id})" class="text-red-500 hover:text-red-400 text-[10px] font-bold uppercase tracking-tighter">Excluir</button>
                             </div>
                         </div>
                     `;
-                    if (task.description.includes('MQTT')) botDiv.innerHTML += card;
-                    else userDiv.innerHTML += card;
+                    if (isBot) botDiv.innerHTML += cardHtml;
+                    else userDiv.innerHTML += cardHtml;
                 });
-            } catch (err) { console.error("Erro ao carregar:", err); }
+            } catch (err) { console.error(err); }
         }
 
         async function criarTarefa() {
             const token = localStorage.getItem('token');
             const title = document.getElementById('task-title').value;
-            const desc = document.getElementById('task-desc').value;
+            const description = document.getElementById('task-desc').value;
             try {
-                await axios.post(`${API_URL}/tasks`, { title, description: desc }, { headers: { Authorization: `Bearer ${token}` } });
+                await axios.post(`${API_URL}/tasks`, { title, description }, { headers: { Authorization: `Bearer ${token}` } });
                 document.getElementById('task-title').value = '';
                 document.getElementById('task-desc').value = '';
                 carregarTarefas();
-            } catch (err) { alert("Erro ao criar tarefa!"); }
+            } catch (err) { alert("Erro ao criar!"); }
         }
 
-        async function deletarTarefa(id) {
+        async function salvarEdicao(id) {
             const token = localStorage.getItem('token');
-            if(!confirm("Deseja excluir este chamado?")) return;
+            const title = document.getElementById(`t-${id}`).innerText;
+            const description = document.getElementById(`d-${id}`).innerText;
+            try {
+                await axios.put(`${API_URL}/tasks/${id}`, { title, description }, { headers: { Authorization: `Bearer ${token}` } });
+                carregarTarefas();
+            } catch (err) { alert("Erro ao atualizar!"); }
+        }
+
+        async function concluir(id) {
+            const token = localStorage.getItem('token');
+            try {
+                await axios.put(`${API_URL}/tasks/${id}`, { status: 'concluido' }, { headers: { Authorization: `Bearer ${token}` } });
+                carregarTarefas();
+            } catch (err) { alert("Erro ao concluir!"); }
+        }
+
+        async function deletar(id) {
+            const token = localStorage.getItem('token');
+            if(!confirm("Remover chamado?")) return;
             try {
                 await axios.delete(`${API_URL}/tasks/${id}`, { headers: { Authorization: `Bearer ${token}` } });
                 carregarTarefas();
-            } catch (err) { alert("Apenas ADMINS podem excluir!"); }
+            } catch (err) { alert("Apenas Administradores podem excluir!"); }
         }
 
         function logout() { localStorage.removeItem('token'); window.location.reload(); }
