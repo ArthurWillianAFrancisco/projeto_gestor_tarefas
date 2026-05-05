@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Tarefas IoT - Security</title>
+    <title>LockDown API - Cadastro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -11,66 +11,36 @@
 
     <!-- TELA DE LOGIN -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center">
-        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700">
-            <h2 class="text-3xl font-bold mb-6 text-center text-blue-400">LockDown API</h2>
+        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700 text-center">
+            <h2 class="text-3xl font-bold mb-6 text-blue-400">LockDown API</h2>
             <input id="login-user" type="text" placeholder="Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600 focus:outline-none focus:border-blue-500">
             <input id="login-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600 focus:outline-none focus:border-blue-500">
-            <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition">Entrar</button>
-            <p class="mt-4 text-center text-sm">Não tem conta? <a href="#" onclick="switchScreen('register-screen')" class="text-blue-400">Cadastre-se</a></p>
-        </div>
-    </div>
-    
-    <!-- DASHBOARD (Aparece após o Login) -->
-<div id="dashboard" class="hidden p-6">
-    <header class="flex justify-between items-center mb-10 border-b border-slate-700 pb-5">
-        <h1 class="text-2xl font-bold">Monitor de Segurança IoT</h1>
-        <span id="user-display" class="text-slate-400 italic">Operador: Carregando...</span>
-    </header>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Coluna de Alertas Críticos (Bots/Sensores) -->
-        <div class="bg-slate-800/50 p-4 rounded-xl border-t-4 border-red-500">
-            <h3 class="font-bold text-red-500 mb-4 flex items-center">
-                <span class="mr-2">🚨</span> Alertas do Sistema
-            </h3>
-            <div id="bot-tasks" class="space-y-4">
-                <!-- Exemplo de Card de Bot -->
-                <div class="bg-slate-700 p-3 rounded shadow border-l-2 border-red-500">
-                    <p class="text-xs text-slate-400 font-mono">[BOT-01] IP SUSPEITO</p>
-                    <h4 class="font-bold">Tentativas excessivas: 192.168.1.50</h4>
-                    <span class="text-[10px] bg-red-900 text-red-200 px-2 py-0.5 rounded uppercase mt-2 inline-block">Crítico</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Coluna de Tarefas Manuais -->
-        <div class="bg-slate-800/50 p-4 rounded-xl border-t-4 border-blue-500">
-            <h3 class="font-bold text-blue-500 mb-4 flex items-center">
-                <span class="mr-2">👤</span> Operação Humana
-            </h3>
-            <div id="user-tasks" class="space-y-4">
-                <!-- Exemplo de Card Humano -->
-                <div class="bg-slate-700 p-3 rounded shadow border-l-2 border-blue-500">
-                    <p class="text-xs text-slate-400 italic">Criado por: Arthur</p>
-                    <h4 class="font-bold">Verificar logs de acesso às 18h</h4>
-                </div>
-            </div>
+            <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition mb-4">Entrar</button>
+            <p class="text-sm">Não tem conta? <a href="javascript:void(0)" onclick="switchScreen('register-screen')" class="text-blue-400 hover:underline">Cadastre-se</a></p>
         </div>
     </div>
 
     <!-- TELA DE CADASTRO -->
     <div id="register-screen" class="hidden min-h-screen flex items-center justify-center">
-        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700">
-            <h2 class="text-2xl font-bold mb-6 text-center">Novo Operador</h2>
-            <input id="reg-user" type="text" placeholder="Nome de Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600">
-            <input id="reg-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600">
-            <button onclick="fazerCadastro()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-bold transition">Criar Conta</button>
-            <button onclick="switchScreen('login-screen')" class="w-full mt-2 text-slate-400 text-sm">Voltar ao Login</button>
+        <div class="bg-slate-800 p-8 rounded-lg shadow-2xl w-96 border border-slate-700 text-center">
+            <h2 class="text-2xl font-bold mb-6">Criar Nova Conta</h2>
+            <input id="reg-user" type="text" placeholder="Nome de Usuário" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600 focus:border-green-500">
+            <input id="reg-pass" type="password" placeholder="Senha" class="w-full p-3 mb-4 bg-slate-700 rounded border border-slate-600 focus:border-green-500">
+            
+            <label class="block mb-2 text-sm text-left text-slate-400">Tipo de Acesso:</label>
+            <select id="reg-role" class="w-full p-3 mb-6 bg-slate-700 rounded border border-slate-600">
+                <option value="user">Usuário Comum (Visualizar)</option>
+                <option value="admin">Administrador (Controle Total)</option>
+            </select>
+
+            <button onclick="fazerCadastro()" class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-bold transition mb-4">Finalizar Cadastro</button>
+            <p class="text-sm"><a href="javascript:void(0)" onclick="switchScreen('login-screen')" class="text-slate-400 hover:underline">Voltar para o Login</a></p>
         </div>
     </div>
 
     <script>
-        const API_URL = "https://projeto-gestor-tarefas.onrender.com"; // O SEU LINK DO RENDER
+        // PEGA O LINK AUTOMATICAMENTE (Seja localhost ou Render)
+        const API_URL = window.location.origin; 
 
         function switchScreen(screenId) {
             document.getElementById('login-screen').classList.add('hidden');
@@ -81,22 +51,35 @@
         async function fazerCadastro() {
             const user = document.getElementById('reg-user').value;
             const pass = document.getElementById('reg-pass').value;
+            const role = document.getElementById('reg-role').value;
+
+            if(!user || !pass) return alert("Preencha todos os campos!");
+
             try {
-                await axios.post(`${API_URL}/auth/register`, { username: user, password: pass, role: 'admin' });
-                alert("Cadastro realizado! Faça login.");
+                await axios.post(`${API_URL}/auth/register`, { 
+                    username: user, 
+                    password: pass, 
+                    role: role 
+                });
+                alert("Usuário " + user + " cadastrado com sucesso!");
                 switchScreen('login-screen');
-            } catch (err) { alert("Erro no cadastro: " + err.response.data.message); }
+            } catch (err) {
+                alert("Erro ao cadastrar: " + (err.response?.data?.message || "Servidor offline"));
+            }
         }
 
         async function fazerLogin() {
             const user = document.getElementById('login-user').value;
             const pass = document.getElementById('login-pass').value;
+
             try {
                 const res = await axios.post(`${API_URL}/auth/login`, { username: user, password: pass });
                 localStorage.setItem('token', res.data.access_token);
-                alert("Logado com sucesso!");
-                // Aqui depois vamos chamar a função de carregar o Dashboard
-            } catch (err) { alert("Login inválido!"); }
+                alert("Bem-vindo, " + user + "!");
+                // No próximo passo criaremos o Dashboard aqui
+            } catch (err) {
+                alert("Login falhou: Usuário ou senha incorretos.");
+            }
         }
     </script>
 </body>
