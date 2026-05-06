@@ -1,13 +1,14 @@
+import os
+from dotenv import load_dotenv
 import paho.mqtt.client as mqtt
 import requests
 import json
-import time
 
-# --- CONFIGURAÇÕES ---
-# Coloque aqui o link do seu Render (sem a barra no final)
-API_URL = "https://projeto-gestor-tarefas.onrender.com"
-# Coloque um Token de Admin válido (pegue fazendo login no seu site e olhando o console ou Network)
-TOKEN_ADMIN = "COLE_SEU_TOKEN_AQUI" 
+# Carrega as variáveis do arquivo .env
+load_dotenv()
+
+API_URL = os.getenv("API_URL")
+TOKEN_ADMIN = os.getenv("RENDER_TOKEN")
 
 TOPICO_ALERTA = "lockdown/seguranca/alertas"
 
