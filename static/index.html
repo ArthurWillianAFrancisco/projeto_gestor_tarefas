@@ -263,6 +263,12 @@
             }
         }
 
+        // Atualiza o dashboard automaticamente a cada 5 segundos
+        setInterval(() => {
+            console.log("Sincronizando com o servidor...");
+            carregarTarefas(); // Nome da função que busca as tarefas na API
+        }, 5000);
+
         function logout() { localStorage.clear(); window.location.reload(); }
     </script>
 </body>
