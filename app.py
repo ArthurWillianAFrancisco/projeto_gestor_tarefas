@@ -3,20 +3,23 @@ from flask_jwt_extended import JWTManager
 from models.task_model import db
 from controllers.task_controller import task_bp
 from controllers.auth_controller import auth_bp
+from datetime import timedelta # Importação nova para o tempo do token
 import os
 
 app = Flask(__name__, static_folder='static')
 
-# --- Configurações de Banco de Dados (Ordem Crítica) ---
+# --- Configurações de Banco de Dados ---
 database_url = os.getenv("DATABASE_URL", "sqlite:///gestor.db")
 
-# Correção obrigatória para o Render (PostgreSQL)
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "sua_chave_secreta_padrao")
+
+# --- AJUSTE PARA O ROBÔ: Token agora dura 24 horas ---
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
 # --- Inicialização ---
 db.init_app(app)
