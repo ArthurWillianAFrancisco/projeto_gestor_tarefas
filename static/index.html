@@ -263,6 +263,28 @@
             }
         }
 
+        function renderizarTarefas(tasks) {
+            // Limpa as colunas antes de desenhar
+            document.getElementById('coluna-pendente').innerHTML = '';
+            
+            tasks.forEach(task => {
+                const card = `
+                    <div class="card">
+                        <h3>${task.title}</h3>
+                        <p>${task.description}</p>
+                        <small>Responsável: ${task.username || 'Sistema'}</small> 
+                        <button onclick="moverTarefa(${task.id})">Mover</button>
+                    </div>
+                `;
+                
+                // Adiciona na coluna correta baseada no status
+                if(task.status === 'pendente') {
+                    document.getElementById('coluna-pendente').innerHTML += card;
+                }
+                // ... repete para os outros status
+            });
+        }
+
         // Atualiza o dashboard automaticamente a cada 5 segundos
         setInterval(() => {
             console.log("Sincronizando com o servidor...");
