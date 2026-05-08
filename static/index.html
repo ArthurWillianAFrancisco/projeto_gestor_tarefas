@@ -256,25 +256,55 @@
             const title = document.getElementById(`t-${id}`).innerText;
             const descElement = document.getElementById(`d-${id}`);
             
-            // Puxa a task para manter o checklist
-            const res = await axios.get(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
-            const task = res.data.find(t => t.id === id);
-            let checkPart = task.description.includes('---CHECK---') ? '---CHECK---' + task.description.split('---CHECK---')[1] : '';
+            try {
+                // Buscamos a lista atual para preservar o checklist existente no banco
+                const res = await axios.get(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
+                const task = res.data.find(t => t.id === id);
+                
+                // Verifica se existe a marcação de checklist para não perdê-la na edição de texto
+                let checkPart = task.description.includes('---CHECK---') ? '---CHECK---' + task.description.split('---CHECK---')[1] : '';
 
-            await axios.put(`${API_URL}/tasks/${id}`, { title, description: descElement.innerText + checkPart }, { headers: { Authorization: `Bearer ${token}` } });
-            carregarTarefas();
+                await axios.put(`${API_URL}/tasks/${id}`, { 
+                    title: title, 
+                    description: descElement.innerText + checkPart 
+                }, { headers: { Authorization: `Bearer ${token}` } });
+                
+                // Com a ordenação por ID no back-end, carregarTarefas manterá a posição visual
+                carregarTarefas();
+            } catch (e) {
+                console.error("Erro ao salvar alteração de texto", e);
+            }
         }
 
         async function toggleCheck(id, itemIdx) {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
-            const task = res.data.find(t => t.id === id);
-            const parts = task.description.split('---CHECK---');
-            const items = JSON.parse(parts[1]);
-            items[itemIdx].done = !items[itemIdx].done;
-            const newDesc = parts[0] + '---CHECK---' + JSON.stringify(items);
-            await axios.put(`${API_URL}/tasks/${id}`, { description: newDesc }, { headers: { Authorization: `Bearer ${token}` } });
-            carregarTarefas();
+            
+            try {
+                // Buscamos a tarefa específica pelo ID para garantir que estamos editando o card correto
+                const res = await axios.get(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
+                const task = res.data.find(t => t.id === id);
+                
+                if (task && task.description.includes('---CHECK---')) {
+                    const parts = task.description.split('---CHECK---');
+                    const items = JSON.parse(parts[1]);
+                    
+                    // Inverte o status de concluído apenas do item clicado
+                    items[itemIdx].done = !items[itemIdx].done;
+                    
+                    const newDesc = parts[0] + '---CHECK---' + JSON.stringify(items);
+                    
+                    // Salva a nova descrição (com o JSON do checklist atualizado) no banco
+                    await axios.put(`${API_URL}/tasks/${id}`, 
+                        { description: newDesc }, 
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
+                    
+                    // Atualiza a interface
+                    carregarTarefas();
+                }
+            } catch (err) {
+                console.error("Erro ao alternar checklist", err);
+            }
         }
 
         async function mudarStatus(id, status) {

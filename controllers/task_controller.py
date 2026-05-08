@@ -8,10 +8,16 @@ task_bp = Blueprint('tasks', __name__)
 @jwt_required()
 def get_tasks():
     try:
-        all_t = Task.query.all()
+        # A MÁGICA ESTÁ AQUI: .order_by(Task.id.asc()) 
+        # Garante que o card 1 venha antes do 2, sempre.
+        all_t = Task.query.order_by(Task.id.asc()).all()
+        
         return jsonify([{
-            "id": x.id, "title": x.title, "description": x.description,
-            "status": x.status, "username": x.owner.username if x.owner else "Sistema"
+            "id": x.id, 
+            "title": x.title, 
+            "description": x.description,
+            "status": x.status, 
+            "username": x.owner.username if x.owner else "Sistema"
         } for x in all_t]), 200
     except:
         return jsonify([]), 200
@@ -23,7 +29,6 @@ def update_task(id):
         t = Task.query.get_or_404(id)
         data = request.get_json()
         
-        # Salva o novo status (Kanban) ou checklist (Description)
         if 'status' in data: t.status = data['status']
         if 'description' in data: t.description = data['description']
         if 'title' in data: t.title = data['title']
@@ -44,14 +49,18 @@ def create_task():
                  status=data.get('status', 'pendente'), user_id=u_id)
         db.session.add(t)
         db.session.commit()
-        return jsonify({"msg": "ok"}), 201
+        return jsonify({"msg": "Criado"}), 201
     except:
-        return jsonify({"msg": "erro"}), 500
+        db.session.rollback()
+        return jsonify({"msg": "Erro"}), 500
 
 @task_bp.route('/tasks/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_task(id):
-    t = Task.query.get_or_404(id)
-    db.session.delete(t)
-    db.session.commit()
-    return jsonify({"msg": "Removido"}), 200
+    try:
+        t = Task.query.get_or_404(id)
+        db.session.delete(t)
+        db.session.commit()
+        return jsonify({"msg": "Removido"}), 200
+    except:
+        return jsonify({"msg": "Erro"}), 500

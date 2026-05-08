@@ -26,16 +26,6 @@ jwt = JWTManager(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(task_bp)
 
-# 4. CONTEXTO DO APP (Agora o 'app' já existe!)
-with app.app_context():
-    db.create_all()
-    # Criar Admin Root se o banco estiver vazio
-    if not User.query.filter_by(role='admin').first():
-        admin = User(username="admin", role="admin")
-        admin.set_password("admin123")
-        db.session.add(admin)
-        db.session.commit()
-        print("✅ Admin Root criado: admin / admin123")
 
 @app.route('/')
 def index():
