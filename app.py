@@ -3,7 +3,7 @@ from flask_jwt_extended import JWTManager
 from models.task_model import db
 from controllers.task_controller import task_bp
 from controllers.auth_controller import auth_bp
-from datetime import timedelta # Importação nova para o tempo do token
+from datetime import timedelta
 import os
 
 app = Flask(__name__, static_folder='static')
@@ -29,9 +29,12 @@ jwt = JWTManager(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(task_bp)
 
-# Criação das tabelas
+# --- BLOCO DE LIMPEZA (RODAR APENAS UMA VEZ) ---
 with app.app_context():
-    db.create_all()
+    print("⚠️ OPERAÇÃO DE LIMPEZA INICIADA")
+    db.drop_all()   # APAGA TUDO NO RENDER
+    db.create_all() # RECRIA AS TABELAS LIMPAS
+    print("✅ BANCO DE DADOS RESETADO COM SUCESSO")
 
 @app.route('/')
 def index():
