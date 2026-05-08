@@ -29,7 +29,7 @@ jwt = JWTManager(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(task_bp)
 
-# Apenas garante que as tabelas existam (não apaga nada)
+# Apenas garante que as tabelas existam
 with app.app_context():
     db.create_all()
 
