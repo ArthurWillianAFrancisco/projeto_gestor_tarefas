@@ -9,17 +9,18 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(username=data.get('username')).first()
     if user and user.check_password(data.get('password')):
-        # Enviamos a role no token e na resposta para o Front facilitar o controle
+        # Incluímos a role no token para controle de acesso
         token = create_access_token(identity=str(user.id), additional_claims={"role": user.role})
         return jsonify({"access_token": token, "role": user.role, "username": user.username}), 200
-    return jsonify({"msg": "Falha no acesso"}), 401
+    return jsonify({"msg": "Falha na autenticação"}), 401
 
 @auth_bp.route('/register', methods=['POST'])
 @jwt_required()
 def register():
     claims = get_jwt()
+    # TRAVA: Se não for admin, não registra ninguém
     if claims.get("role") != 'admin':
-        return jsonify({"msg": "Acesso negado"}), 403
+        return jsonify({"msg": "Acesso negado: Apenas administradores podem criar operadores"}), 403
     
     data = request.get_json()
     if User.query.filter_by(username=data.get('username')).first():
@@ -29,4 +30,4 @@ def register():
     new_user.set_password(data.get('password'))
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({"msg": "Novo operador registrado"}), 201
+    return jsonify({"msg": "Novo operador registrado com sucesso"}), 201

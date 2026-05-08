@@ -8,8 +8,6 @@ task_bp = Blueprint('tasks', __name__)
 @jwt_required()
 def get_tasks():
     try:
-        claims = get_jwt()
-        user_role = claims.get("role", "user")
         all_t = Task.query.all()
         return jsonify([{
             "id": x.id, "title": x.title, "description": x.description,
@@ -25,16 +23,16 @@ def update_task(id):
         t = Task.query.get_or_404(id)
         data = request.get_json()
         
-        # Atualiza o que vier no JSON (Checklist ou Coluna)
+        # Salva o novo status (Kanban) ou checklist (Description)
         if 'status' in data: t.status = data['status']
         if 'description' in data: t.description = data['description']
         if 'title' in data: t.title = data['title']
         
         db.session.commit()
-        return jsonify({"msg": "ok"}), 200
+        return jsonify({"msg": "Atualizado"}), 200
     except:
         db.session.rollback()
-        return jsonify({"msg": "erro"}), 500
+        return jsonify({"msg": "Erro ao atualizar"}), 500
 
 @task_bp.route('/tasks', methods=['POST'])
 @jwt_required()
@@ -56,4 +54,4 @@ def delete_task(id):
     t = Task.query.get_or_404(id)
     db.session.delete(t)
     db.session.commit()
-    return jsonify({"msg": "ok"}), 200
+    return jsonify({"msg": "Removido"}), 200
