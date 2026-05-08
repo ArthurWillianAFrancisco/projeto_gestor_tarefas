@@ -55,3 +55,20 @@ def delete_task(id):
     except:
         db.session.rollback()
         return jsonify({"msg": "erro"}), 500
+    
+@task_bp.route('/tasks/<int:id>', methods=['PUT'])
+@jwt_required()
+def update_task(id):
+    try:
+        t = Task.query.get_or_404(id)
+        data = request.get_json()
+        
+        # Se vier 'status' no JSON, atualiza. Isso faz o checklist/drag-drop funcionar.
+        if 'status' in data:
+            t.status = data.get('status')
+            
+        db.session.commit()
+        return jsonify({"msg": "Atualizado com sucesso"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": str(e)}), 500

@@ -6,6 +6,16 @@ from controllers.auth_controller import auth_bp
 from datetime import timedelta
 import os
 
+with app.app_context():
+    db.create_all()
+    # Cria o admin padrão se não existir ninguém no banco
+    if not User.query.first():
+        admin = User(username="admin", role="admin")
+        admin.set_password("admin123")
+        db.session.add(admin)
+        db.session.commit()
+        print("✅ Usuário 'admin' criado com senha 'admin123'")
+
 app = Flask(__name__, static_folder='static')
 
 # --- Configurações de Banco de Dados ---
@@ -40,6 +50,7 @@ def index():
 @app.route('/login-page')
 def serve_front():
     return app.send_static_file('index.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

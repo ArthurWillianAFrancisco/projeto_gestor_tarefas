@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# O db é criado aqui e importado pelos outros arquivos
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -9,7 +8,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), default='comum')
+    role = db.Column(db.String(20), default='comum') # 'admin' ou 'comum'
     tasks = db.relationship('Task', backref='owner', lazy=True)
 
     def set_password(self, password):
