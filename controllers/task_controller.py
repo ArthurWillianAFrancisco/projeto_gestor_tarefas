@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from models.task_model import db, Task
+from models.task_model import db, Task # Importa do model para evitar o erro circular
 
 task_bp = Blueprint('tasks', __name__)
 
@@ -15,9 +15,8 @@ def get_tasks():
         
         for x in all_t:
             try:
-                # Usa 'owner' (relacionamento definido no seu model)
+                # Usa 'owner' definido no relacionamento do model
                 autor = x.owner.username if x.owner else "Sistema"
-                
                 output.append({
                     "id": x.id, 
                     "title": x.title, 
@@ -26,8 +25,7 @@ def get_tasks():
                     "username": autor if user_role == 'admin' else "Equipe"
                 })
             except:
-                continue # Pula cards com erro
-                
+                continue
         return jsonify(output), 200
     except:
         return jsonify([]), 200
