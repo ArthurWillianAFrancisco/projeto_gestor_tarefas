@@ -170,19 +170,27 @@
         }
 
         async function carregarTarefas() {
+            // Se o dashboard não estiver visível, não executa para evitar erros
+            if (document.getElementById('dashboard-screen').classList.contains('hidden')) return;
+
             const token = localStorage.getItem('token');
             const statusList = ['pendente', 'iniciado', 'impedido', 'concluido'];
             const container = document.getElementById('kanban-container');
+
+            // LIMPEZA CRÍTICA: Esvazia o container antes de reconstruir as colunas 
             container.innerHTML = '';
 
             try {
-                const res = await axios.get(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
-                
+                const res = await axios.get(`${API_URL}/tasks`, { 
+                    headers: { Authorization: `Bearer ${token}` } 
+                });
+
                 statusList.forEach(status => {
                     const colTemplate = document.getElementById('col-template').content.cloneNode(true);
                     const colDiv = colTemplate.querySelector('.kanban-col');
                     colTemplate.querySelector('.status-title span').innerText = status;
-                    
+
+                    // Filtra as tarefas por status (mantendo a ordem de ID enviada pelo servidor) 
                     const tasksFiltered = res.data.filter(t => (t.status || 'pendente') === status);
                     colTemplate.querySelector('.count').innerText = tasksFiltered.length;
 
@@ -191,6 +199,7 @@
                         let descriptionClean = task.description;
                         let checklistHtml = '';
 
+                        // Processamento do Checklist 
                         if (task.description.includes('---CHECK---')) {
                             const parts = task.description.split('---CHECK---');
                             descriptionClean = parts[0];
@@ -209,6 +218,7 @@
                             checklistHtml += '</div>';
                         }
 
+                        // Construção do Card 
                         colDiv.innerHTML += `
                             <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl shadow-lg border-l-4 ${isBot ? 'border-l-red-500' : 'border-l-blue-500'} group">
                                 <div class="flex justify-between items-start mb-2">
@@ -231,9 +241,14 @@
                             </div>
                         `;
                     });
+                    // Adiciona a coluna processada ao container principal
                     container.appendChild(colTemplate);
                 });
-            } catch (err) { console.error(err); }
+            } catch (err) {
+                console.error("Erro no SOC:", err);
+                // Se o token expirar, desconecta o usuário
+                if(err.response && err.response.status === 401) logout();
+            }
         }
 
         async function criarTarefa() {
