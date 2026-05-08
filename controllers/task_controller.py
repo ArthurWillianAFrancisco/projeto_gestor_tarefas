@@ -15,9 +15,9 @@ def get_tasks():
         
         for x in all_t:
             try:
-                # Se o card não tiver dono, definimos um padrão para não quebrar
+                # Se o card não tiver dono (owner), usa 'Sistema' para não travar
                 autor = "Sistema"
-                if x.owner and hasattr(x.owner, 'username'):
+                if x.owner:
                     autor = x.owner.username
                 
                 output.append({
@@ -28,11 +28,12 @@ def get_tasks():
                     "username": autor if user_role == 'admin' else "Equipe"
                 })
             except:
-                continue # Se este card específico der erro, pula ele!
+                # Se o card estiver corrompido, apenas pula ele
+                continue
                 
         return jsonify(output), 200
-    except Exception as e:
-        return jsonify([]), 200 # Retorna lista vazia em vez de Erro 500
+    except:
+        return jsonify([]), 200
 
 @task_bp.route('/tasks', methods=['POST'])
 @jwt_required()

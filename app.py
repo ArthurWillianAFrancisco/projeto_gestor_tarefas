@@ -18,7 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "sua_chave_secreta_padrao")
 
-# --- AJUSTE PARA O ROBÔ: Token agora dura 24 horas ---
+# Token dura 24 horas para o Robô não deslogar
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
 # --- Inicialização ---
@@ -29,16 +29,13 @@ jwt = JWTManager(app)
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(task_bp)
 
-# --- BLOCO DE LIMPEZA (RODAR APENAS UMA VEZ) ---
+# Apenas garante que as tabelas existam (não apaga nada)
 with app.app_context():
-    print("⚠️ OPERAÇÃO DE LIMPEZA INICIADA")
-    db.drop_all()   # APAGA TUDO NO RENDER
-    db.create_all() # RECRIA AS TABELAS LIMPAS
-    print("✅ BANCO DE DADOS RESETADO COM SUCESSO")
+    db.create_all()
 
 @app.route('/')
 def index():
-    return {"message": "API de Gestão de Tarefas Ativa!"}, 200
+    return {"message": "Aegis SOC API Ativa!"}, 200
 
 @app.route('/login-page')
 def serve_front():
