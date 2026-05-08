@@ -10,31 +10,16 @@ def get_tasks():
     try:
         claims = get_jwt()
         user_role = claims.get("role", "user")
-        
         all_t = Task.query.all()
         output = []
-        
         for x in all_t:
-            try:
-                # Blindagem: Se o card não tiver owner, usa 'Sistema' para não travar
-                autor = "Sistema"
-                if x.owner and hasattr(x.owner, 'username'):
-                    autor = x.owner.username
-                
-                output.append({
-                    "id": x.id, 
-                    "title": x.title, 
-                    "description": x.description, 
-                    "status": x.status, 
-                    "username": autor if user_role == 'admin' else "Equipe"
-                })
-            except:
-                # Se o card estiver corrompido ou sem dados obrigatórios, pula ele
-                continue
-                
+            autor = x.owner.username if x.owner else "Sistema"
+            output.append({
+                "id": x.id, "title": x.title, "description": x.description, 
+                "status": x.status, "username": autor if user_role == 'admin' else "Equipe"
+            })
         return jsonify(output), 200
     except:
-        # Se tudo falhar, retorna lista vazia mas não trava o site (Erro 500)
         return jsonify([]), 200
 
 @task_bp.route('/tasks', methods=['POST'])
@@ -43,11 +28,7 @@ def create_task():
     try:
         data = request.get_json()
         u_id = get_jwt_identity()
-        t = Task(
-            title=data.get('title'), 
-            description=data.get('description'), 
-            user_id=u_id
-        )
+        t = Task(title=data.get('title'), description=data.get('description'), user_id=u_id)
         db.session.add(t)
         db.session.commit()
         return jsonify({"msg": "ok"}), 201
@@ -59,16 +40,7 @@ def create_task():
 @jwt_required()
 def delete_task(id):
     try:
-        current_user_id = get_jwt_identity()
-        claims = get_jwt()
-        user_role = claims.get("role", "user")
-        
         t = Task.query.get_or_404(id)
-        
-        # Regra de Admin: Admin apaga tudo, user só o dele
-        if user_role != 'admin' and t.user_id != current_user_id:
-            return jsonify({"msg": "Acesso Negado"}), 403
-            
         db.session.delete(t)
         db.session.commit()
         return jsonify({"msg": "ok"}), 200
