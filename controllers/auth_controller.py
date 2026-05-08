@@ -9,18 +9,17 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(username=data.get('username')).first()
     if user and user.check_password(data.get('password')):
-        # Incluímos a role no token para controle de acesso
+        # Importante: identity precisa ser String no JWT
         token = create_access_token(identity=str(user.id), additional_claims={"role": user.role})
         return jsonify({"access_token": token, "role": user.role, "username": user.username}), 200
-    return jsonify({"msg": "Falha na autenticação"}), 401
+    return jsonify({"msg": "Acesso negado"}), 401
 
 @auth_bp.route('/register', methods=['POST'])
 @jwt_required()
 def register():
     claims = get_jwt()
-    # TRAVA: Se não for admin, não registra ninguém
     if claims.get("role") != 'admin':
-        return jsonify({"msg": "Acesso negado: Apenas administradores podem criar operadores"}), 403
+        return jsonify({"msg": "Apenas admins criam usuários"}), 403
     
     data = request.get_json()
     if User.query.filter_by(username=data.get('username')).first():
@@ -30,4 +29,25 @@ def register():
     new_user.set_password(data.get('password'))
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({"msg": "Novo operador registrado com sucesso"}), 201
+    return jsonify({"msg": "Operador criado!"}), 201
+
+# NOVA ROTA: Listar todos para o painel de controle
+@auth_bp.route('/users', methods=['GET'])
+@jwt_required()
+def list_users():
+    if get_jwt().get("role") != 'admin':
+        return jsonify({"msg": "Privado"}), 403
+    users = User.query.all()
+    return jsonify([{"id": u.id, "username": u.username, "role": u.role} for u in users]), 200
+
+# NOVA ROTA: Deletar usuário
+@auth_bp.route('/users/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_user(id):
+    if get_jwt().get("role") != 'admin':
+        return jsonify({"msg": "Privado"}), 403
+    user = User.query.get_or_404(id)
+    if user.username == 'admin': return jsonify({"msg": "Root não pode ser removido"}), 400
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"msg": "Removido"}), 200

@@ -9,75 +9,49 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
-        .kanban-col { height: calc(100vh - 120px); }
+        .kanban-col { height: calc(100vh - 150px); }
         .card-edit:focus { background: rgba(30, 41, 59, 0.5); outline: none; border-radius: 4px; }
-        .checklist-item.done { text-decoration: line-through; opacity: 0.5; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-900 text-white font-sans overflow-hidden">
 
-    <!-- TELAS DE LOGIN E CADASTRO (MANTIDAS) -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-950">
         <div class="bg-slate-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl w-96 border border-slate-700 text-center">
-            <img src="/static/d3eb690a-703c-461a-aeaf-4dd81542e22b-removebg-preview.png" 
-                alt="Logo Aegis SOC" 
-                class="mx-auto mb-4 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)] brightness-125">
-            
+            <img src="/static/d3eb690a-703c-461a-aeaf-4dd81542e22b-removebg-preview.png" alt="Logo Aegis SOC" class="mx-auto mb-4 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)] brightness-125 w-32">
             <h2 class="text-3xl font-black mb-6 text-blue-500 tracking-tighter">Aegis SOC</h2>
-            
             <input id="login-user" type="text" placeholder="Usuário" class="w-full p-3 mb-4 bg-slate-900 rounded-lg border border-slate-700 outline-none focus:border-blue-500 text-sm">
             <input id="login-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-900 rounded-lg border border-slate-700 outline-none focus:border-blue-500 text-sm">
-            
-            <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold transition">Acessar Terminal</button>
-            <button onclick="switchScreen('register-screen')" class="mt-4 text-xs text-slate-500 hover:underline">Novo Registro</button>
-        </div>
-    </div>
-
-    <div id="register-screen" class="hidden min-h-screen flex items-center justify-center bg-slate-950">
-        <div class="bg-slate-800/80 p-8 rounded-2xl shadow-2xl w-96 border border-slate-700 text-center">
-            <img src="/static/d3eb690a-703c-461a-aeaf-4dd81542e22b-removebg-preview.png" 
-                alt="Logo Aegis SOC" 
-                class="mx-auto mb-4 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)] brightness-110">
-                
-            <h2 class="text-3xl font-black mb-6 text-blue-500 tracking-tighter">Novo Operador</h2>
-            
-            <input id="reg-user" type="text" placeholder="Nome" class="w-full p-3 mb-4 bg-slate-900 rounded-lg border border-slate-700 outline-none">
-            <input id="reg-pass" type="password" placeholder="Senha" class="w-full p-3 mb-6 bg-slate-900 rounded-lg border border-slate-700 outline-none">
-            
-            <select id="reg-role" class="w-full p-3 mb-6 bg-slate-900 rounded-lg border border-slate-700 text-sm">
-                <option value="user">Usuário</option>
-                <option value="admin">Administrador</option>
-            </select>
-            
-            <button onclick="fazerCadastro()" class="w-full bg-emerald-600 p-3 rounded-lg font-bold">Cadastrar</button>
-            <button onclick="switchScreen('login-screen')" class="mt-4 text-xs text-slate-500 hover:underline">Voltar</button>
+            <button onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold transition uppercase text-xs tracking-widest">Acessar Terminal</button>
+            <p class="mt-6 text-[10px] text-slate-500 uppercase tracking-widest">Restricted Access System</p>
         </div>
     </div>
 
     <div id="dashboard-screen" class="hidden h-screen flex flex-col bg-slate-950">
         <header class="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <img src="/static/d3eb690a-703c-461a-aeaf-4dd81542e22b-removebg-preview.png" 
-                    alt="Logo Aegis SOC" 
-                    class="w-30 h-20 object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]">
-                
-                <h1 class="text-2xl font-bold text-blue-500">Aegis SOC</h1>
-                <span class="text-[10px] bg-slate-800 px-2 py-1 rounded border border-slate-700 font-mono text-slate-300">OP: <span id="current-user" class="text-blue-400">---</span></span>
+                <img src="/static/d3eb690a-703c-461a-aeaf-4dd81542e22b-removebg-preview.png" alt="Logo" class="w-20 h-12 object-contain">
+                <h1 class="text-xl font-black text-blue-500 tracking-tighter uppercase">Aegis SOC</h1>
+                <span class="text-[9px] bg-slate-800 px-2 py-1 rounded border border-slate-700 font-mono text-slate-300 uppercase">Operador: <span id="current-user" class="text-blue-400">---</span></span>
             </div>
             
-            <div class="flex gap-4">
-                <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-xs font-black flex items-center gap-2">
-                    <span class="material-symbols-outlined text-sm">add</span> NOVO CARD
+            <div class="flex gap-3 items-center">
+                <button id="btn-admin" onclick="abrirPainelAdmin()" class="hidden p-2 text-slate-500 hover:text-blue-400 transition">
+                    <span class="material-symbols-outlined">settings</span>
                 </button>
-                <button onclick="logout()" class="text-slate-500 hover:text-red-500"><span class="material-symbols-outlined">power_settings_new</span></button>
+                <button onclick="abrirModal()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-[10px] font-black flex items-center gap-2 transition">
+                    <span class="material-symbols-outlined text-sm">add</span> NOVO CHAMADO
+                </button>
+                <button onclick="logout()" class="text-slate-500 hover:text-red-500 transition"><span class="material-symbols-outlined">power_settings_new</span></button>
             </div>
         </header>
 
         <main class="flex-1 p-6 flex gap-6 overflow-x-auto items-start">
             <template id="col-template">
-                <div class="min-w-[320px] w-[320px] flex flex-col">
-                    <h3 class="status-title text-[11px] font-black uppercase tracking-widest mb-4 flex justify-between px-2 text-slate-500">
-                        <span></span> <span class="count bg-slate-800 px-2 rounded">0</span>
+                <div class="min-w-[300px] w-[300px] flex flex-col">
+                    <h3 class="status-title text-[10px] font-black uppercase tracking-widest mb-4 flex justify-between px-2 text-slate-500">
+                        <span></span> <span class="count bg-slate-800 px-2 rounded text-blue-400">0</span>
                     </h3>
                     <div class="kanban-col space-y-4 overflow-y-auto pr-2"></div>
                 </div>
@@ -86,22 +60,40 @@
         </main>
     </div>
 
-    <!-- MODAL -->
     <div id="modal-task" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl w-full max-w-lg shadow-2xl">
-            <h2 class="text-2xl font-bold mb-6">Criar Card de Operação</h2>
-            <input id="task-title" type="text" placeholder="Título do Card" class="w-full p-4 bg-slate-900 rounded-xl border border-slate-700 mb-4 outline-none focus:border-blue-500">
-            <textarea id="task-desc" placeholder="Descrição ou IP..." class="w-full p-4 bg-slate-900 rounded-xl border border-slate-700 mb-4 h-32 outline-none focus:border-blue-500"></textarea>
+            <h2 class="text-xl font-black mb-6 uppercase text-blue-500 tracking-tighter">Abrir Chamado</h2>
+            <input id="task-title" type="text" placeholder="Título do Incidente" class="w-full p-4 bg-slate-900 rounded-xl border border-slate-700 mb-4 outline-none focus:border-blue-500 text-sm">
+            <textarea id="task-desc" placeholder="Detalhes técnicos / IPs" class="w-full p-4 bg-slate-900 rounded-xl border border-slate-700 mb-4 h-24 outline-none focus:border-blue-500 text-sm"></textarea>
             
-            <div class="mb-6">
-                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Checklist (um por linha)</label>
-                <textarea id="task-check" placeholder="Ex: Verificar Firewall&#10;Bloquear IP&#10;Reiniciar logs" class="w-full p-3 bg-slate-900 rounded-xl border border-slate-700 h-24 outline-none text-xs focus:border-green-500"></textarea>
-            </div>
+            <label class="text-[10px] font-black text-slate-500 uppercase mb-2 block tracking-widest">Checklist de Resposta</label>
+            <textarea id="task-check" placeholder="Ex: Verificar Firewall&#10;Bloquear Porta 80" class="w-full p-3 bg-slate-900 rounded-xl border border-slate-700 h-24 outline-none text-xs focus:border-blue-500 mb-6"></textarea>
 
             <div class="flex gap-4">
-                <button onclick="fecharModal()" class="flex-1 p-4 text-slate-500 font-bold">CANCELAR</button>
-                <button onclick="criarTarefa()" class="flex-1 bg-blue-600 p-4 rounded-xl font-black">GERAR CARD</button>
+                <button onclick="fecharModal()" class="flex-1 p-4 text-slate-500 font-bold text-xs uppercase">Cancelar</button>
+                <button onclick="criarTarefa()" class="flex-1 bg-blue-600 p-4 rounded-xl font-black text-xs uppercase tracking-widest">Lançar</button>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-admin" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-6 z-[60]">
+        <div class="bg-slate-800 border border-slate-700 p-8 rounded-3xl w-full max-w-xl shadow-2xl">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-black text-blue-500 tracking-tighter uppercase">Gestão de Operadores</h2>
+                <button onclick="fecharPainelAdmin()" class="text-slate-500 hover:text-white uppercase text-[10px] font-bold">Fechar</button>
+            </div>
+            
+            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700 mb-8 grid grid-cols-1 md:grid-cols-4 gap-3">
+                <input id="new-op-user" type="text" placeholder="ID Operador" class="bg-transparent border-b border-slate-700 p-2 text-xs outline-none focus:border-blue-500 md:col-span-1">
+                <input id="new-op-pass" type="password" placeholder="Senha" class="bg-transparent border-b border-slate-700 p-2 text-xs outline-none focus:border-blue-500 md:col-span-1">
+                <select id="new-op-role" class="bg-transparent border-b border-slate-700 p-2 text-[10px] outline-none">
+                    <option value="comum" class="bg-slate-900">OPERADOR</option>
+                    <option value="admin" class="bg-slate-900">ADMIN</option>
+                </select>
+                <button onclick="cadastrarNovoOperador()" class="bg-blue-600 rounded-lg font-black text-[10px] uppercase">Adicionar</button>
+            </div>
+
+            <div class="max-h-60 overflow-y-auto space-y-2 pr-2" id="user-list-admin"></div>
         </div>
     </div>
 
@@ -109,12 +101,17 @@
         const API_URL = window.location.origin;
 
         function switchScreen(id) {
-            ['login-screen', 'register-screen', 'dashboard-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['login-screen', 'dashboard-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
         function abrirModal() { document.getElementById('modal-task').classList.remove('hidden'); }
         function fecharModal() { document.getElementById('modal-task').classList.add('hidden'); }
+        function abrirPainelAdmin() { 
+            document.getElementById('modal-admin').classList.remove('hidden');
+            carregarUsuarios();
+        }
+        function fecharPainelAdmin() { document.getElementById('modal-admin').classList.add('hidden'); }
 
         async function fazerLogin() {
             const user = document.getElementById('login-user').value;
@@ -122,22 +119,54 @@
             try {
                 const res = await axios.post(`${API_URL}/auth/login`, { username: user, password: pass });
                 localStorage.setItem('token', res.data.access_token);
-                localStorage.setItem('username', user);
-                document.getElementById('current-user').innerText = user.toUpperCase();
+                localStorage.setItem('username', res.data.username);
+                localStorage.setItem('role', res.data.role);
+                
+                document.getElementById('current-user').innerText = res.data.username.toUpperCase();
+                if(res.data.role === 'admin') document.getElementById('btn-admin').classList.remove('hidden');
+                
                 switchScreen('dashboard-screen');
                 carregarTarefas();
-            } catch (err) { alert("Erro de Autenticação."); }
+            } catch (err) { alert("Falha na autenticação SOC."); }
         }
 
-        async function fazerCadastro() {
-            const user = document.getElementById('reg-user').value;
-            const pass = document.getElementById('reg-pass').value;
-            const role = document.getElementById('reg-role').value;
+        async function carregarUsuarios() {
+            const token = localStorage.getItem('token');
             try {
-                await axios.post(`${API_URL}/auth/register`, { username: user, password: pass, role: role });
-                alert("Operador cadastrado.");
-                switchScreen('login-screen');
-            } catch (err) { alert("Erro no cadastro."); }
+                const res = await axios.get(`${API_URL}/auth/users`, { headers: { Authorization: `Bearer ${token}` } });
+                const list = document.getElementById('user-list-admin');
+                list.innerHTML = '';
+                res.data.forEach(u => {
+                    list.innerHTML += `
+                        <div class="flex justify-between p-3 bg-slate-900/50 rounded-xl border border-slate-700/50 items-center">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-xs uppercase tracking-widest">${u.username}</span>
+                                <span class="text-[9px] text-blue-500 font-black uppercase">${u.role}</span>
+                            </div>
+                            ${u.username !== 'admin' ? `<button onclick="deletarUsuario(${u.id})" class="text-red-500 material-symbols-outlined text-sm">person_remove</button>` : ''}
+                        </div>
+                    `;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function cadastrarNovoOperador() {
+            const user = document.getElementById('new-op-user').value;
+            const pass = document.getElementById('new-op-pass').value;
+            const role = document.getElementById('new-op-role').value;
+            const token = localStorage.getItem('token');
+            try {
+                await axios.post(`${API_URL}/auth/register`, { username: user, password: pass, role: role }, { headers: { Authorization: `Bearer ${token}` } });
+                alert("Operador Integrado.");
+                carregarUsuarios();
+            } catch (e) { alert("Erro ao cadastrar."); }
+        }
+
+        async function deletarUsuario(id) {
+            if(!confirm("Remover operador da equipe?")) return;
+            const token = localStorage.getItem('token');
+            await axios.delete(`${API_URL}/auth/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            carregarUsuarios();
         }
 
         async function carregarTarefas() {
@@ -152,20 +181,16 @@
                 statusList.forEach(status => {
                     const colTemplate = document.getElementById('col-template').content.cloneNode(true);
                     const colDiv = colTemplate.querySelector('.kanban-col');
-                    const titleSpan = colTemplate.querySelector('.status-title span');
-                    const countSpan = colTemplate.querySelector('.count');
-
-                    titleSpan.innerText = status;
+                    colTemplate.querySelector('.status-title span').innerText = status;
+                    
                     const tasksFiltered = res.data.filter(t => (t.status || 'pendente') === status);
-                    countSpan.innerText = tasksFiltered.length;
+                    colTemplate.querySelector('.count').innerText = tasksFiltered.length;
 
                     tasksFiltered.forEach(task => {
-                        const autor = task.description.includes('MQTT') ? 'BOT-01' : (task.username || 'OPERADOR');
-                        const isBot = autor === 'BOT-01';
-
-                        // Processar Checklist
+                        const isBot = task.description.includes('MQTT');
                         let descriptionClean = task.description;
                         let checklistHtml = '';
+
                         if (task.description.includes('---CHECK---')) {
                             const parts = task.description.split('---CHECK---');
                             descriptionClean = parts[0];
@@ -184,32 +209,27 @@
                             checklistHtml += '</div>';
                         }
 
-                        const card = `
+                        colDiv.innerHTML += `
                             <div class="bg-slate-800 border border-slate-700 p-4 rounded-xl shadow-lg border-l-4 ${isBot ? 'border-l-red-500' : 'border-l-blue-500'} group">
                                 <div class="flex justify-between items-start mb-2">
-                                    <h4 id="t-${task.id}" onblur="salvarAlteracao(${task.id})" contenteditable="true" class="card-edit font-bold text-sm text-slate-100 leading-tight">${task.title}</h4>
-                                    <button onclick="deletar(${task.id})" class="text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
+                                    <h4 id="t-${task.id}" onblur="salvarAlteracao(${task.id})" contenteditable="true" class="card-edit font-bold text-xs text-slate-100 leading-tight uppercase tracking-widest">${task.title}</h4>
+                                    <button onclick="deletarTarefa(${task.id})" class="text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition">
                                         <span class="material-symbols-outlined text-sm">delete</span>
                                     </button>
                                 </div>
-                                <p id="d-${task.id}" onblur="salvarAlteracao(${task.id})" contenteditable="true" class="card-edit text-[11px] text-slate-400 leading-relaxed">${descriptionClean}</p>
-                                
+                                <p id="d-${task.id}" onblur="salvarAlteracao(${task.id})" contenteditable="true" class="card-edit text-[10px] text-slate-400 leading-relaxed">${descriptionClean}</p>
                                 ${checklistHtml}
-
                                 <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/50">
-                                    <span class="text-[9px] font-black ${isBot ? 'text-red-500' : 'text-blue-500'} flex items-center gap-1 uppercase">
-                                        <span class="material-symbols-outlined text-[12px]">${isBot ? 'smart_toy' : 'person_check'}</span> ${autor}
-                                    </span>
-                                    <select onchange="mudarStatus(${task.id}, this.value)" class="bg-slate-900 text-[9px] font-black p-1 rounded outline-none border border-slate-700">
-                                        <option value="pendente" ${status === 'pendente' ? 'selected' : ''}>PENDENTE</option>
-                                        <option value="iniciado" ${status === 'iniciado' ? 'selected' : ''}>INICIADO</option>
-                                        <option value="impedido" ${status === 'impedido' ? 'selected' : ''}>IMPEDIDO</option>
-                                        <option value="concluido" ${status === 'concluido' ? 'selected' : ''}>CONCLUÍDO</option>
+                                    <span class="text-[8px] font-black ${isBot ? 'text-red-500' : 'text-blue-500'} uppercase">@${task.username || 'OPERADOR'}</span>
+                                    <select onchange="mudarStatus(${task.id}, this.value)" class="bg-slate-900 text-[8px] font-black p-1 rounded border border-slate-700 outline-none">
+                                        <option value="pendente" ${status==='pendente'?'selected':''}>PENDENTE</option>
+                                        <option value="iniciado" ${status==='iniciado'?'selected':''}>INICIADO</option>
+                                        <option value="impedido" ${status==='impedido'?'selected':''}>IMPEDIDO</option>
+                                        <option value="concluido" ${status==='concluido'?'selected':''}>CONCLUÍDO</option>
                                     </select>
                                 </div>
                             </div>
                         `;
-                        colDiv.innerHTML += card;
                     });
                     container.appendChild(colTemplate);
                 });
@@ -221,7 +241,6 @@
             const title = document.getElementById('task-title').value;
             const desc = document.getElementById('task-desc').value;
             const checkLines = document.getElementById('task-check').value.split('\n').filter(l => l.trim() !== '');
-            
             const checklist = checkLines.map(l => ({ text: l, done: false }));
             const fullDesc = desc + (checklist.length > 0 ? '---CHECK---' + JSON.stringify(checklist) : '');
 
@@ -237,29 +256,22 @@
             const title = document.getElementById(`t-${id}`).innerText;
             const descElement = document.getElementById(`d-${id}`);
             
-            // Buscar se já tem checklist na descrição original para não perder
+            // Puxa a task para manter o checklist
             const res = await axios.get(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
-            const taskOriginal = res.data.find(t => t.id === id);
-            let checkPart = '';
-            if (taskOriginal.description.includes('---CHECK---')) {
-                checkPart = '---CHECK---' + taskOriginal.description.split('---CHECK---')[1];
-            }
+            const task = res.data.find(t => t.id === id);
+            let checkPart = task.description.includes('---CHECK---') ? '---CHECK---' + task.description.split('---CHECK---')[1] : '';
 
-            try {
-                await axios.put(`${API_URL}/tasks/${id}`, { title, description: descElement.innerText + checkPart }, { headers: { Authorization: `Bearer ${token}` } });
-                carregarTarefas();
-            } catch (err) { console.error(err); }
+            await axios.put(`${API_URL}/tasks/${id}`, { title, description: descElement.innerText + checkPart }, { headers: { Authorization: `Bearer ${token}` } });
+            carregarTarefas();
         }
 
         async function toggleCheck(id, itemIdx) {
             const token = localStorage.getItem('token');
             const res = await axios.get(`${API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } });
             const task = res.data.find(t => t.id === id);
-            
             const parts = task.description.split('---CHECK---');
             const items = JSON.parse(parts[1]);
             items[itemIdx].done = !items[itemIdx].done;
-            
             const newDesc = parts[0] + '---CHECK---' + JSON.stringify(items);
             await axios.put(`${API_URL}/tasks/${id}`, { description: newDesc }, { headers: { Authorization: `Bearer ${token}` } });
             carregarTarefas();
@@ -271,43 +283,23 @@
             carregarTarefas();
         }
 
-        async function deletar(id) {
+        async function deletarTarefa(id) {
+            if(!confirm("Remover chamado?")) return;
             const token = localStorage.getItem('token');
-            if(confirm("Excluir chamado?")) {
-                await axios.delete(`${API_URL}/tasks/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-                carregarTarefas();
-            }
+            await axios.delete(`${API_URL}/tasks/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+            carregarTarefas();
         }
 
-        function renderizarTarefas(tasks) {
-            // Limpa as colunas antes de desenhar
-            document.getElementById('coluna-pendente').innerHTML = '';
-            
-            tasks.forEach(task => {
-                const card = `
-                    <div class="card">
-                        <h3>${task.title}</h3>
-                        <p>${task.description}</p>
-                        <small>Responsável: ${task.username || 'Sistema'}</small> 
-                        <button onclick="moverTarefa(${task.id})">Mover</button>
-                    </div>
-                `;
-                
-                // Adiciona na coluna correta baseada no status
-                if(task.status === 'pendente') {
-                    document.getElementById('coluna-pendente').innerHTML += card;
-                }
-                // ... repete para os outros status
-            });
-        }
-
-        // Atualiza o dashboard automaticamente a cada 5 segundos
-        setInterval(() => {
-            console.log("Sincronizando com o servidor...");
-            carregarTarefas(); // Nome da função que busca as tarefas na API
-        }, 5000);
-
+        setInterval(() => carregarTarefas(), 10000);
         function logout() { localStorage.clear(); window.location.reload(); }
+        
+        // Auto-login se já tiver token
+        if(localStorage.getItem('token')) {
+            document.getElementById('current-user').innerText = localStorage.getItem('username').toUpperCase();
+            if(localStorage.getItem('role') === 'admin') document.getElementById('btn-admin').classList.remove('hidden');
+            switchScreen('dashboard-screen');
+            carregarTarefas();
+        }
     </script>
 </body>
 </html>
