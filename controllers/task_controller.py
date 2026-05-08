@@ -12,12 +12,22 @@ def get_tasks():
         user_role = claims.get("role", "user")
         all_t = Task.query.all()
         output = []
+        
         for x in all_t:
-            autor = x.owner.username if x.owner else "Sistema"
-            output.append({
-                "id": x.id, "title": x.title, "description": x.description, 
-                "status": x.status, "username": autor if user_role == 'admin' else "Equipe"
-            })
+            try:
+                # Usa 'owner' (relacionamento definido no seu model)
+                autor = x.owner.username if x.owner else "Sistema"
+                
+                output.append({
+                    "id": x.id, 
+                    "title": x.title, 
+                    "description": x.description, 
+                    "status": x.status, 
+                    "username": autor if user_role == 'admin' else "Equipe"
+                })
+            except:
+                continue # Pula cards com erro
+                
         return jsonify(output), 200
     except:
         return jsonify([]), 200
